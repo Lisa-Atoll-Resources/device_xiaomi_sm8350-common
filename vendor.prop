@@ -228,6 +228,7 @@ debug.sdm.support_writeback=0
 
 # LMK
 ro.lmk.filecache_min_kb=153600
+ro.lmk.kill_timeout_ms=50
 
 # Media
 debug.stagefright.c2inputsurface=-1
