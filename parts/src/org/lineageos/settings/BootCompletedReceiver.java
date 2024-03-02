@@ -21,11 +21,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.display.DisplayManager;
+import android.util.Log;
+import android.view.Display;
 import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display.HdrCapabilities;
-import android.view.SurfaceControl;
 
 import org.lineageos.settings.utils.FileUtils;
 import org.lineageos.settings.thermal.ThermalUtils;
@@ -55,8 +57,8 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         FileUtils.writeLine(DC_DIMMING_NODE, dcDimmingEnabled ? "1" : "0");
 
         // Override HDR types to enable Dolby Vision
-        final IBinder displayToken = SurfaceControl.getInternalDisplayToken();
-        SurfaceControl.overrideHdrTypes(displayToken, new int[]{
+        final DisplayManager displayManager = context.getSystemService(DisplayManager.class);
+        displayManager.overrideHdrTypes(Display.DEFAULT_DISPLAY, new int[]{
                 HdrCapabilities.HDR_TYPE_DOLBY_VISION, HdrCapabilities.HDR_TYPE_HDR10,
                 HdrCapabilities.HDR_TYPE_HLG, HdrCapabilities.HDR_TYPE_HDR10_PLUS});
 >>>>>>> 20cfd5e (sm8350-common: parts: Override HDR types for dolby vision)
