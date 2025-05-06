@@ -517,3 +517,7 @@ PRODUCT_PACKAGES += \
 
 # Call the proprietary setup
 $(call inherit-product, vendor/xiaomi/lisa/lisa-vendor.mk)
+
+# Remove packages
+PRODUCT_PACKAGES += \
+    RemovePackages
