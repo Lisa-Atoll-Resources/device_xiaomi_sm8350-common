@@ -10,6 +10,13 @@ $(call inherit-product, device/xiaomi/lisa/device.mk)
 # Inherit some common Lineage stuff.
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
+# Bootanimation
+TARGET_BOOTANIMATION_RES=1080
+
+# Remove unwanted apps
+TARGET_INCLUDE_ACCORD := false
+PRODUCT_NO_CAMERA := false
+
 PRODUCT_BRAND := Xiaomi
 PRODUCT_DEVICE := lisa
 PRODUCT_MANUFACTURER := Xiaomi
