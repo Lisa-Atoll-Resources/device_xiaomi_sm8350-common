@@ -56,7 +56,7 @@
     </integer-array>
 
     <!-- Preferred max refresh rate at keyguard, if supported by the display. -->
-    <integer name="config_keyguardMaxRefreshRate">60</integer>
+    <integer name="config_keyguardMaxRefreshRate">90</integer>
         <!-- The padding around the statusbar -->
     <dimen name="status_bar_padding_top">12dp</dimen>
 
