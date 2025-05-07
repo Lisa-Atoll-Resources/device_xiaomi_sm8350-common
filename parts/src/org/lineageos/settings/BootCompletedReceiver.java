@@ -1,47 +1,34 @@
-/*
- * Copyright (C) 2015 The CyanogenMod Project
- *               2017-2019 The LineageOS Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.lineageos.settings;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.hardware.display.DisplayManager;
 import android.util.Log;
 import android.view.Display;
-import android.content.SharedPreferences;
-import androidx.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Display.HdrCapabilities;
+import androidx.preference.PreferenceManager;
 
-import org.lineageos.settings.utils.FileUtils;
 import org.lineageos.settings.thermal.ThermalUtils;
 import org.lineageos.settings.refreshrate.RefreshUtils;
+import org.lineageos.settings.utils.FileUtils;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
     private static final boolean DEBUG = false;
     private static final String TAG = "XiaomiParts";
 
+    private static final String DC_DIMMING_ENABLE_KEY = "dc_dimming_enable";
+    private static final String DC_DIMMING_NODE = "/sys/devices/platform/soc/soc:qcom,dsi-display-primary/dimlayer_exposure";
+
+    private static final String HTSR_ENABLE_KEY = "htsr_enable";
+    private static final String HTSR_FILE = "/sys/devices/virtual/touch/touch_dev/bump_sample_rate";
+
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.i(TAG, "Received intent: " + intent.getAction());
+        if (intent == null || intent.getAction() == null) return;
+        if (DEBUG) Log.d(TAG, "Received intent: " + intent.getAction());
 
-<<<<<<< HEAD
         switch (intent.getAction()) {
             case Intent.ACTION_LOCKED_BOOT_COMPLETED:
                 onLockedBootCompleted(context);
@@ -50,27 +37,34 @@ public class BootCompletedReceiver extends BroadcastReceiver {
                 onBootCompleted(context);
                 break;
         }
-=======
-        // DC Dimming
-        FileUtils.enableService(context);
-        boolean dcDimmingEnabled = sharedPrefs.getBoolean(DC_DIMMING_ENABLE_KEY, false);
-        FileUtils.writeLine(DC_DIMMING_NODE, dcDimmingEnabled ? "1" : "0");
-
-        // Override HDR types to enable Dolby Vision
-        final DisplayManager displayManager = context.getSystemService(DisplayManager.class);
-        displayManager.overrideHdrTypes(Display.DEFAULT_DISPLAY, new int[]{
-                HdrCapabilities.HDR_TYPE_DOLBY_VISION, HdrCapabilities.HDR_TYPE_HDR10,
-                HdrCapabilities.HDR_TYPE_HLG, HdrCapabilities.HDR_TYPE_HDR10_PLUS});
->>>>>>> 20cfd5e (sm8350-common: parts: Override HDR types for dolby vision)
     }
 
     private static void onLockedBootCompleted(Context context) {
-        // Services that don't require reading from data.
+        // For future locked boot services
     }
-    
+
     private static void onBootCompleted(Context context) {
-        // Data is now accessible (user has just unlocked).
-        RefreshUtils.initialize(context);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+
         ThermalUtils.startService(context);
-    }        
+        RefreshUtils.startService(context);
+
+        boolean HTSREnabled = sharedPrefs.getBoolean(HTSR_ENABLE_KEY, false);
+        FileUtils.writeLine(HTSR_FILE, HTSREnabled ? "1" : "0");
+
+        boolean dcDimmingEnabled = sharedPrefs.getBoolean(DC_DIMMING_ENABLE_KEY, false);
+        FileUtils.writeLine(DC_DIMMING_NODE, dcDimmingEnabled ? "1" : "0");
+
+        DisplayManager displayManager = context.getSystemService(DisplayManager.class);
+        if (displayManager != null) {
+            displayManager.overrideHdrTypes(Display.DEFAULT_DISPLAY, new int[]{
+                    HdrCapabilities.HDR_TYPE_DOLBY_VISION,
+                    HdrCapabilities.HDR_TYPE_HDR10,
+                    HdrCapabilities.HDR_TYPE_HLG,
+                    HdrCapabilities.HDR_TYPE_HDR10_PLUS
+            });
+        } else if (DEBUG) {
+            Log.w(TAG, "DisplayManager not available, HDR override skipped");
+        }
+    }
 }
