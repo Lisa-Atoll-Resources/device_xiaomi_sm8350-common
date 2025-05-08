@@ -19,7 +19,7 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/launch_with_ven
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
 
 # Inherit MiuiCamera Makefile
-$(call inherit-product, vendor/xiaomi/miuicamera-lisa/device.mk)
+#$(call inherit-product, vendor/xiaomi/miuicamera-lisa/device.mk)
 
 # Inherit proprietary targets
 $(call inherit-product, vendor/xiaomi/sm8350-common/sm8350-common-vendor.mk)
